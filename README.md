@@ -73,8 +73,7 @@ spatial_size=(32,32)
 hist_bins=32
 
 
-After reading the following blog which was mentioned in my mentor's messages, I used LUV and hog_channel=0 and created successful result with the same code 
-and slightly different cuts in the slightly different cuts for averaged heatmaps for consecutive frames.
+Also, I used LUV and hog_channel=0 and created successful result with the same code and slightly different cuts for averaged heatmaps for consecutive frames.
 
 color_space='LUV'
 hog_channel=0
@@ -92,10 +91,7 @@ The example hog feature :
 
 ![][image2]
 
-For the final result, i chose the second one because its good at detecting white cars on the grey(sunny) background even it gives more false signals on sideways.
-You can see the condition in the project video. 
-But, we created the successful result(detected cars in the video all the time without false signal) using the first hog configration. I think we can get the same
-results for other configurations with slightly different cuts in averaged heatmaps for the consectuve frames. The model files for two models:
+I think we can get the same results for other configurations with slightly different cuts in averaged heatmaps for the consectuve frames.
 
 #### Classification
 After extracting features, we used StandarScaler from sklearn. We divided samples to traing sets and test sets with ratio of 0.8:0.2. Also, we cross-checked
@@ -113,13 +109,13 @@ The model files for two configurations we used in this study can be found in hom
 
 Codes for the following studies can be found in VehicleDetection.ipynb. Functions can be found in lesson_functions.py
 
-I used multi-scale windows. The following scales have overlap of 75%.  
-	scale1  scale2 scale3
-ystart = 380    400    500
-ystop = 480     600    700
-scale = 1       1.5    2.5
+I used multi-scale windows. The following scales have overlap of 75% and are chosen empircilly. 
+	
+	scale1  : ystart = 380   ystop=480   scale=1    
+	scale2  : ystart = 400   ystop=600   scale=1.5
+	scale3  : ystart = 500   ystop=700   scale=1.5
 
-The sliding windows are shown below.
+The sliding windows for the LUV configuration are shown below.
 
 ![][image3]
 
@@ -134,23 +130,30 @@ We can see that all cars are detected with lot of false signals.
 
 ![][image6]
 
+#### The image result for LUV configuration
+
 With heatmap cut, we cleaned false signals and removed some weak true signals(white cars) 
 
 ![][image7]
 
-The reason we are not using heatmap cuts is we want to keep as many signal as possible since we can decrease false signals using consecutive frame information.
-Instead of making decision using only one frame info, i prefered to make decision based consecutive frames info. If we are detecting cars only in images, we should
-use cuts and focus on color space and hog features. When we used color_space='YCrCb' and hog_channel='ALL', we got much better results for the test images. Depending
-on the road condition and type of colors of the cars in images, some color spaces and hog configurations show better results than others in certain cases. 
-It does not mean those are better than others.
+#### The image result for YCrCb configuration
+
+we got much better results for the test YCrCb images. Depending on the road condition and type of colors of the cars in images, 
+some color spaces and hog configurations show better results than others in certain cases. It does not mean those are better than others.
 
 ![][image8]
 
+
 ---
 
-### Video Implementation
+### Video Processing
 
-We created class which keeps all rectangles and heatmaps for thirty consecutive frames. The heatmap values are converted to zero or one and saved.
+
+We created class which keeps all rectangles and heatmaps for thirty consecutive frames. We did not use heatmap cuts when we save heatmap.
+The reason we are not using heatmap cuts is we want to keep as many signal as possible since we can decrease false signals comparing and 
+matching consecutive frame information.
+
+The heatmap values are converted to zero or one and saved.
 
 	heat = add_heat(heat,rectangles)
 	heat[heat>0]=1
@@ -164,9 +167,9 @@ Using the normalized heat, we tried to separate true signals from false signals 
         	heatmap_cut = heatmap_cut+heat
 	
 	if color_space=='LUV':
-        	heatmap_cut = apply_threshold(heatmap_cut, 27)
+                heatmap_cut = apply_threshold(heatmap_cut, 27)
     	elif color_space=='YCrCb':
-        	heatmap_cut = apply_threshold(heatmap_cut, 15)      (Cut 1)
+                heatmap_cut = apply_threshold(heatmap_cut, 15)      (Cut 1)
 
 	heatmap_cut[heatmap_cut>0]=1  
 
@@ -178,15 +181,16 @@ rectangle list, we reconstruct
     	for rect_set in det.prev_rects:
 		rect_set_new=check_heat(heatmap_cut,rect_set)
         	if len(rect_set_new) > 0:
-            	i += 1
-            	heatmap_img = add_heat(heatmap_img, rect_set_new)
+            	        i += 1
+            	        heatmap_img = add_heat(heatmap_img, rect_set_new)
   
     	if color_space=='LUV':
-        	heatmap_img = apply_threshold(heatmap_img, i)
+                heatmap_img = apply_threshold(heatmap_img, i)
     	elif color_space=='YCrCb':
-        	heatmap_img = apply_threshold(heatmap_img, i//2)    (Cut 2)
+                heatmap_img = apply_threshold(heatmap_img, i//2)    (Cut 2)
      
 We have to tune two cuts(Cut 1 and 2). We tuned cut 2 to include all true signals and then, tune cut 1 to exclude false signals as much as possible.
+
 Overall, the procedure is quite robust and we created successfull results using two HOGs configurations without much work.
 You can find above code in VehicleDetection.ipynb. The final code with lane detection is implemented in LineAndVehicleDetection.ipynb
 The image calibration file is copied to output_images. The functons related to lane finding are written advanced_line.py.
