@@ -1,2 +1,2 @@
 # Vehicle-Detection
-project 5 for udacity self-driving car course 
+project 5 for udacity self-driving car course - 1st version
