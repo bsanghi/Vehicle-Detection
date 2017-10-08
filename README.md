@@ -29,8 +29,7 @@ create a heat map of recurring detections frame by frame to reject outliers and 
 [image1]: ./examples/car_not_car.png
 [image2]: ./examples/hog_feature.png
 [image3]: ./examples/multislide_windows.jpg
-[image4]: ./examples/test5_windows.jpg
-[image5]: ./examples/test5_heatmap.png
+[image5]: ./examples/test5_heatmap.jpg
 [image6]: ./examples/no_heatmap_cut.png
 [image7]: ./examples/heatmap_cut1.png
 [image8]: ./examples/result_YCrCb.png
@@ -113,40 +112,36 @@ ystart = 380    400    500
 ystop = 480     600    700
 scale = 1       1.5    2.5
 
-The sliding windows are shown below :
+The sliding windows are shown below.
 
 ![][image3]
 
-The sliding windows for image test5.jpg :
-
-![][image4]
-
-The heatmap for image test5.jpg
+The sliding windows and headmap for image test5.jpg. The images does not have signal for the third scale sliding windows :
 
 ![][image5]
 
-All test images without heatmap cut:
+### Image processing
+
+All test images without heatmap cut. The rectangles for 3 scale sliding windows are combined and calculated heatmap. 
+We can see that all cars are detected with lot of false signals.
 
 ![][image6]
 
-All test images with heatmap cut(1):
+When we use heatmap cuts, most of  :
 
 ![][image7]
 
 The reason we are not using heatmap cuts is we want to keep as many signal as possible since we can decrease false signals using consecutive frame information.
 Instead of making decision using only one frame info, i prefered to make decision based consecutive frames info. If we are detecting cars only in images, we should
-use cuts and focus on color space and hog features. When we used color_space='YCrCb' and hog_channel='ALL', we got much better results.
+use cuts and focus on color space and hog features. When we used color_space='YCrCb' and hog_channel='ALL', we got much better results for the test images. Depending
+on the road condition and type of colors of the cars in images, some color spaces and hog configurations show better results than others in certain cases. 
+It does not mean those are better than others.
 
 ![][image8]
 
 ---
 
 ### Video Implementation
-
-The final video :
-
-1. [project_video](./project_video_output.mp4)
-2. [test_video](./test_video_output.mp4)
 
 We created class which keeps all rectangles and heatmaps for thirty consecutive frames. The heatmap values are converted to zero or one and saved.
 
@@ -155,7 +150,7 @@ heat[heat>0]=1
 det.add_heat(heat)
 det.add_rects(rectangles)
  
-Using the normalized heat, we tried to separate signal from false signal :
+Using the normalized heat, we tried to separate true signals from false signals :
 
 heatmap_cut = np.zeros_like(img[:,:,0])
 for heat in det.prev_heat:
@@ -181,6 +176,15 @@ rectangle list, we reconstruct
      
 We have to tune two cuts(Cut 1 and 2). We tuned cut 2 to include all true signals and then, tune cut 1 to exclude false signals as much as possible.
 Overall, the procedure is quite robust and we created successfull results using two HOGs configurations without much work.
+You can find above code in VehicleDetection.ipynb. The final code with lane detection is implemented in LineAndVehicleDetection.ipynb
+The image calibration constant is copied. The functons related lane finding are written advanced_line.py.
+
+We added lane detection in final videos:
+
+1. [project video without lane detection for LUV configuration ](./project_video_output.mp4)
+2. [test video without lane detection for LUV configuration](./test_video_out_luv32.mp4)
+
+
 
 ---
 
