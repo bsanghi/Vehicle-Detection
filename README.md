@@ -1,8 +1,8 @@
 [//]: # (Image References)
 [image1]: ./examples/car_not_car.png
 [image2]: ./examples/hog_feature.png
-[image3]: ./examples/multislide_windows.jpg
-[image4]: ./examples/test5_windows.jpg
+[image3]: ./examples/multislide_windows.png
+[image4]: ./examples/test5_windows.png
 [image5]: ./examples/test5_heatmap.png
 [image6]: ./examples/no_heatmap_cut.png
 [image7]: ./examples/heatmap_cut1.png 
@@ -38,8 +38,8 @@ create a heat map of recurring detections frame by frame to reject outliers and 
 [video2]: ./test_video.mp4
 
 ---
+## Histogram of Oriented Gradients (HOG) and Car Classifier
 
-##Histogram of Oriented Gradients (HOG) and Car Classifier
 
 First, we need to create a classifier which classifies car agains non-cars. Using all the codes we used during the online class, i built pipeline quickly
 and tested on the project video. 
@@ -161,9 +161,8 @@ heatmap_cut = np.zeros_like(img[:,:,0])
 for heat in det.prev_heat:
         heatmap_cut = heatmap_cut+heat
 
-# LUV
 cut1=27
-heatmap_cut = apply_threshold(heatmap_cut, cut1) # Cut 1
+heatmap_cut = apply_threshold(heatmap_cut, cut1)  (Cut 1)
 heatmap_cut[heatmap_cut>0]=1  
 
 Then we matched the heatmap passed our cuts with rectangles and only chose rectangles overlapped with heatmap_cut signals. After creating new
@@ -178,14 +177,14 @@ rectangle list, we reconstruct
             heatmap_img = add_heat(heatmap_img, rect_set_new)
     
     # LUV 32
-    heatmap_img = apply_threshold(heatmap_img, i) # Cut 2
+    heatmap_img = apply_threshold(heatmap_img, i)  (Cut 2)
      
 We have to tune two cuts(Cut 1 and 2). We tuned cut 2 to include all true signals and then, tune cut 1 to exclude false signals as much as possible.
 Overall, the procedure is quite robust and we created successfull results using two HOGs configurations without much work.
 
 ---
 
-###Discussion
+### Discussion
 
 The procedure i used works well. I used two HOG configurations(two color spaces) and produced successful videos for both. 
 Because riding conditions constantly changes in videos, its better to use approach independent of spaces and other parameters.
