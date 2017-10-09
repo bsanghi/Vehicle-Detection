@@ -197,13 +197,13 @@ The image calibration file is copied to output_images. The functons related to l
 
 The final videos with lane detection for the LUV configuration:
 
-1. [project video without lane detection for LUV configuration ](./project_video_out_luv32_withlane.mp4)
-2. [test video without lane detection for LUV configuration](./test_video_out_luv32_withlane.mp4)
+1. [project video with lane detection for LUV configuration ](./project_video_out_luv32_withlane.mp4)
+2. [test video with lane detection for LUV configuration](./test_video_out_luv32_withlane.mp4)
 
 Videos for YCrCb configuration :
 
-1. [project video without lane detection for YCrCb configuration ](./project_video_out_YCrCb32_withlane.mp4)
-2. [test video without lane detection for YCrCb configuration](./test_video_out_YCrCb32_withlane.mp4)
+1. [project video with lane detection for YCrCb configuration ](./project_video_out_YCrCb32_withlane.mp4)
+2. [test video with lane detection for YCrCb configuration](./test_video_out_YCrCb32_withlane.mp4)
 
 ---
 
